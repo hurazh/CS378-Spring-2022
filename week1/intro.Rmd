@@ -1,0 +1,78 @@
+---
+title: "Week 1"
+output: html_notebook
+---
+
+## Exploratory data analysis and visualization 
+
+Loading the data
+```{r}
+orgs <- read.csv("organisms_genes.tsv", sep='\t')
+```
+
+Preview
+```{r}
+head(orgs)
+table(orgs$type)
+```
+
+maybe plot out the number of genes that code for proteins over the total number of basepairs
+```{r}
+library(ggplot2)
+ggplot(orgs, aes(bp, coding, color=type)) +
+      geom_point(size=3)
+```
+there's one organisms has significantly higher number of both basepairs and genes that code for proteins, but what is it?
+```{r}
+orgs[which.max(orgs$bp),]
+mean(orgs$bp)
+```
+
+to make the plot more interpretable, you can just remove it
+```{r}
+orgs_filter <- orgs[orgs$name != "Wheat",]
+ggplot(orgs_filter, aes(bp, coding, color=type)) +
+        geom_point(size=3)
+```
+
+or taking the log
+```{r}
+orgs$log_bp <- log10(orgs$bp)
+orgs$log_coding <- log10(orgs$coding)
+library(dplyr)
+orgs <- orgs %>% mutate(log_bp = log10(bp),
+                        log_coding = log10(coding))
+head(orgs)
+ggplot(orgs, aes(log_bp, log_coding, color=type)) +
+  geom_point(size=3)
+```
+
+let's try to make a new variable and calculate the $mu$ and $sigma$ of the ratio of genes which are coding 
+```{r}
+orgs <- orgs %>% mutate(genes = coding + noncoding)
+orgs %>%
+  group_by(type) %>%
+  summarize(n=n(),
+            coding_ratio_mu = mean(coding/genes),
+            coding_ratio_sigma = sd(coding/genes))
+```
+and have some more plots to visulize the this data, like the range of bp for each organism type
+```{r}
+orgs_filter %>%
+  group_by(type) %>%
+  summarize(basepairs=median(bp),
+            min=min(bp),
+            max=max(bp)) %>%
+  ggplot(aes(type, basepairs, ymin=min, ymax=max)) +
+          geom_pointrange()
+```
+or do some organism-type-wise linear regression fitting on the bp vs coding plots
+```{r}
+ggplot(orgs_filter, aes(bp, coding, col=type)) +
+        geom_point() + geom_smooth(se=FALSE, method="lm")
+```
+or have “faceting” plots by types
+```{r}
+ggplot(orgs, aes(bp, coding)) +
+  geom_point() + facet_wrap(~ type, scales="free")
+```
