@@ -38,7 +38,7 @@ Computer Labs
 	ref:
 	1. https://www.huber.embl.de/msmb/code/12-chap.R
 
-9. (ML-2) Sptail Transcriptomics\
+9. (ML-2) Spatial Transcriptomics\
 	ref:
 	1) https://github.com/edward130603/BayesSpace
 	2) BayesTME (will be public in a month)
