@@ -1,8 +1,7 @@
 # CS378-Spring-2022
 CS378 Computational Bio
 
-1. Exploratory data analysis (using dyplr) and visualization (using ggplot2)
-
+1. Exploratory data analysis (using dyplr) and visualization (using ggplot2)\\
 	ref: 	
 	1) https://biodatascience.github.io/compbio/eda/EDA.html
 	2) http://genomicsclass.github.io/book/pages/dplyr_intro.html
