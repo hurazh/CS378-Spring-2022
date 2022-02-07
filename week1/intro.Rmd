@@ -10,7 +10,7 @@ Loading the data
 orgs <- read.csv("organisms_genes.tsv", sep='\t')
 ```
 
-Preview
+Preview the data
 ```{r}
 head(orgs)
 table(orgs$type)
