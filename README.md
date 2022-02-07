@@ -1,5 +1,5 @@
 # CS378-Spring-2022
-CS378 Computational Bio
+Computer Labs
 
 1. Exploratory data analysis (using dyplr) and visualization (using ggplot2)\
 	ref:
