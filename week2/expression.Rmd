@@ -1,0 +1,69 @@
+---
+title: "Week 2"
+output: html_notebook
+---
+
+First, install all the necessary packages
+```{r}
+BiocManager::install("GEOquery")
+BiocManager::install("preprocessCore")
+install.packages('pheatmap')
+install.packages('matrixStats')
+```
+and attach them
+```{r}
+library(GEOquery)
+library(preprocessCore)
+library(matrixStats)
+library(pheatmap)
+```
+
+Download the expression data using `GEOquery`
+```{r}
+file <- list.files(pattern="GSE2125")
+if (length(file) == 0) {
+  geo <- getGEO("GSE2125", destdir=".")
+  e <- geo[[1]]
+} else {
+  e <- getGEO(filename=file)
+}
+```
+Let's have a look at this data we just downloaded
+```{r}
+head(exprs(e))
+```
+```{r}
+head(pData(e))
+```
+```{r}
+head(fData(e))
+```
+```{r}
+e$extract_protocol_ch1[1]
+```
+```{r}
+e$characteristics_ch1
+```
+```{r}
+table(e$characteristics_ch1)
+```
+
+check what's the range of the gene expression and draw a boxplot
+```{r}
+range(exprs(e))
+boxplot(exprs(e),range=0)
+```
+we see there're some difference in expression ranges between different gene, better to preprocess it with `normalize.quantiles`
+```{r}
+exprs(e) <- normalize.quantiles(exprs(e))
+boxplot(exprs(e),range=0)
+```
+Finally, let's make a heatmap of the expression data
+```{r}
+exp_val <- rowVars(exprs(e))
+o <- head(order(exp_val, decreasing=TRUE),200)
+pheatmap(exprs(e)[o,],
+         annotation_col=pData(e)["characteristics_ch1"],
+         show_rownames=FALSE, show_colnames=FALSE)
+```
+
