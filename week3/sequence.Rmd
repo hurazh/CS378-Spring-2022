@@ -1,0 +1,82 @@
+---
+title: "Week 3"
+output: html_notebook
+---
+```{r}
+# loading packages
+# BiocManager::install(c("Biostrings", "BSgenome.Hsapiens.NCBI.GRCh38"))
+library(Biostrings)
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+```
+
+### DNAString object
+It encodes a DNA string. You can measure its length with `length()` or get its reverse complement by `reverseComplement`.
+```{r}
+dna_str <- DNAString("AAACGCG")
+dna_str
+length(dna_str)
+reverseComplement(dna_str)
+```
+
+### DNAStringSet object
+It encodes a collection of DNA strings. You can measure the number of DNA strings with `length()` and the length of each string with `width()`.
+```{r}
+dna_set <- DNAStringSet(c("AAAAA","CGCG","TCG"))
+dna_set
+reverseComplement(dna_set)
+length(dna_set)
+width(dna_set)
+```
+
+### Useful functions
+1. occurence/frequency
+`letterFrequency()` measures the occurence of a signle letter or a pattern in a dna string
+```{r}
+letterFrequency(dna_str, 'C')
+letterFrequency(dna_set, 'C')
+letterFrequency(dna_set, "C", as.prob=TRUE)
+letterFrequency(dna_str, "CG")
+letterFrequency(dna_set, "CG")
+```
+2. matching
+```{r}
+# single pattern + multiple strings
+dna <- DNAStringSet(c("AACTCTC","CTCTAAA","AAAGAG"))
+matches <- vmatchPattern("CTC", dna)
+matches
+elementNROWS(matches)
+# multiple pattern + single string
+dna <- DNAString("AAACTCAAAGAGAAATTTAAA")
+pd <- PDict(c("CTC","GAG","TTT","AAA"))
+matches <- matchPDict(pd, dna)
+matches
+elementNROWS(matches)
+```
+
+### Example
+Full genome sequences for Homo sapiens
+```{r}
+Hsapiens
+seqnames(Hsapiens)
+seqinfo(Hsapiens)
+```
+play with chromosome 1
+```{r}
+chr1 <- Hsapiens[[1]]
+length(chr1)
+alphabetFrequency(chr1)
+matchPattern("CTC", chr1)
+```
+match pattern allowing mismatches
+```{r}
+n_pattern = "AAGCCTAAGCCTAAGCCTAA"
+matchPattern(seq_pattern, chr1)
+matches <- matchPattern(n_pattern, chr1, max.mismatch=2)
+matches
+mismatch(n_pattern, matches)
+```
+select sequences at given location
+```{r}
+gr <- GRanges("1", IRanges(1e6 + c(1,101,201), width=100))
+getSeq(Hsapiens, gr)
+```
