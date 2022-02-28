@@ -16,7 +16,7 @@ Computer Labs
 	1) https://monashbioinformaticsplatform.github.io/r-more/topics/sequences_and_features.html
 	2) https://biodatascience.github.io/compbio/bioc/strings.html
 
-4. PCA & Clustering\
+4. KMeans & Clustering\
 	ref:
 	1) http://genomicsclass.github.io/book/pages/clustering_and_heatmaps.html
 	2) https://biodatascience.github.io/compbio/dist/hclust.html
