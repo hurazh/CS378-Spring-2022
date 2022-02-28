@@ -1,0 +1,62 @@
+---
+title: "Week 4"
+output: html_notebook
+---
+load the gene expression data
+```{r}
+setwd("~/Desktop/compbio/week4")
+load(file='tissuesGeneExpression.rda')
+exp <- data.frame(t(e))
+```
+in `exp` dataset, each row is a sample and each column is a gene
+```{r}
+head(exp)
+```
+### KMeans
+since KMeans is (highly) sensitive to initialization, we set random seed to 1 for reproductivity
+```{r}
+set.seed(1)
+```
+try KMeans with only first 2 genes
+```{r}
+km_1 <- kmeans(exp[,1:2], centers=7)
+names(km_1)
+ggplot(exp, aes(X1007_s_at, X1053_at, color=tissue)) +   
+  geom_point(size=2, pch=16)
+cluster_1 <- as.character(km_1$cluster)
+ggplot(exp, aes(X1007_s_at, X1053_at, color=cluster_1)) +   
+  geom_point(size=2, pch=16)
+table(true=tissue,cluster=km_1$cluster)
+```
+not really good, maybe redo on all genes
+```{r}
+km_2 <- kmeans(exp, centers=7)
+table(true=tissue,cluster=km_2$cluster)
+d <- dist(exp)
+mds <- cmdscale(d)
+distance <- data.frame(X=mds[,1],
+                       Y=mds[,2])
+ggplot(distance, aes(X, Y, color=tissue)) +   
+       geom_point(size=2, pch=16)
+cluster_2 <- as.character(km_2$cluster)
+ggplot(distance, aes(X, Y, color=cluster_2)) +   
+       geom_point(size=2, pch=16)
+```
+slightly better, but not really ideal. Actually, kmeans only works linearly separable data, which is not usually the case in bio data (especially expression). Unfortunately, there're way many (computational) biologists are still using this method without awareness of its limitation (most current spatial transcriptomics analysis). I'm not saying you should never use kmeans (its easy and fast), but you should consider what data you are dealing with before applying any method since every method has its pros and cons.
+
+### Hierarchical clustering
+```{r}
+hc <- hclust(d)
+hc
+plot(hc, labels=tissue, cex=0.5)
+```
+specifying tree height
+```{r}
+hcluster_h <- cutree(hc, h=120)
+table(true=tissue, cluster=hcluster_h)
+```
+specifying number of clusters 
+```{r}
+hcluster_k <- cutree(hc, k=7)
+table(true=tissue, cluster=hcluster_k)
+```
